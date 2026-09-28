@@ -1,79 +1,76 @@
 -- ============================================================================
--- TurismoUQ - Script de carga de datos (Entrega 1)
--- Volumen minimo exigido, con distribucion ASIMETRICA (no repartir parejo)
--- Requiere haber corrido antes turismouq_ddl.sql sobre una base limpia.
--- Oracle XE 21c. Ejecutar de arriba a abajo (SQL Developer / SQL*Plus).
--- Tiempo estimado: unos minutos, por el volumen de RESERVA (25.000+).
+-- TurismoUQ - Script de carga de datos - CONTINUACION
+-- Este script asume que MUNICIPIO, TIPO_ALOJAMIENTO, ROL y TEMPORADA
+-- YA estan cargados correctamente (12, 4, 2 y 10 filas respectivamente).
+-- Si por alguna razon no lo estan, este bloque los deja en ese estado
+-- antes de continuar con el resto (ALOJAMIENTO en adelante).
 -- ============================================================================
 
 SET DEFINE OFF;
 SET SERVEROUTPUT ON;
 
--- ============================================================================
--- 1. MUNICIPIO (12 filas) - los 12 municipios reales del Quindio
--- ============================================================================
-INSERT ALL
-  INTO MUNICIPIO (nombre) VALUES ('Armenia')
-  INTO MUNICIPIO (nombre) VALUES ('Calarca')
-  INTO MUNICIPIO (nombre) VALUES ('Montenegro')
-  INTO MUNICIPIO (nombre) VALUES ('Quimbaya')
-  INTO MUNICIPIO (nombre) VALUES ('La Tebaida')
-  INTO MUNICIPIO (nombre) VALUES ('Circasia')
-  INTO MUNICIPIO (nombre) VALUES ('Filandia')
-  INTO MUNICIPIO (nombre) VALUES ('Salento')
-  INTO MUNICIPIO (nombre) VALUES ('Genova')
-  INTO MUNICIPIO (nombre) VALUES ('Pijao')
-  INTO MUNICIPIO (nombre) VALUES ('Buenavista')
-  INTO MUNICIPIO (nombre) VALUES ('Cordoba')
-SELECT * FROM dual;
+-- ---------- Reset seguro de catalogos base (idempotente) ----------
+DELETE FROM USUARIO_ALOJAMIENTO;
+DELETE FROM USUARIO_SISTEMA;
+DELETE FROM RESENA;
+DELETE FROM RESERVA_SERVICIO;
+DELETE FROM SERVICIO;
+DELETE FROM PAGO;
+DELETE FROM RESERVA_HABITACION;
+DELETE FROM RESERVA;
+DELETE FROM CLIENTE;
+DELETE FROM TARIFA;
+DELETE FROM HABITACION;
+DELETE FROM ALOJAMIENTO;
+DELETE FROM TEMPORADA;
+DELETE FROM ROL;
+DELETE FROM TIPO_ALOJAMIENTO;
+DELETE FROM MUNICIPIO;
+COMMIT;
 
--- ============================================================================
--- 2. TIPO_ALOJAMIENTO (4 filas minimo exigido)
--- ============================================================================
-INSERT ALL
-  INTO TIPO_ALOJAMIENTO (nombre) VALUES ('FINCA_CAFETERA')
-  INTO TIPO_ALOJAMIENTO (nombre) VALUES ('HOTEL')
-  INTO TIPO_ALOJAMIENTO (nombre) VALUES ('GLAMPING')
-  INTO TIPO_ALOJAMIENTO (nombre) VALUES ('HOSTAL')
-SELECT * FROM dual;
+INSERT INTO MUNICIPIO (nombre) VALUES ('Armenia');
+INSERT INTO MUNICIPIO (nombre) VALUES ('Calarca');
+INSERT INTO MUNICIPIO (nombre) VALUES ('Montenegro');
+INSERT INTO MUNICIPIO (nombre) VALUES ('Quimbaya');
+INSERT INTO MUNICIPIO (nombre) VALUES ('La Tebaida');
+INSERT INTO MUNICIPIO (nombre) VALUES ('Circasia');
+INSERT INTO MUNICIPIO (nombre) VALUES ('Filandia');
+INSERT INTO MUNICIPIO (nombre) VALUES ('Salento');
+INSERT INTO MUNICIPIO (nombre) VALUES ('Genova');
+INSERT INTO MUNICIPIO (nombre) VALUES ('Pijao');
+INSERT INTO MUNICIPIO (nombre) VALUES ('Buenavista');
+INSERT INTO MUNICIPIO (nombre) VALUES ('Cordoba');
 
--- ============================================================================
--- 3. ROL (soporte de USUARIO_SISTEMA / Entrega 3)
--- ============================================================================
-INSERT ALL
-  INTO ROL (nombre) VALUES ('ADMINISTRADOR')
-  INTO ROL (nombre) VALUES ('ENCARGADO_ALOJAMIENTO')
-SELECT * FROM dual;
+INSERT INTO TIPO_ALOJAMIENTO (nombre) VALUES ('FINCA_CAFETERA');
+INSERT INTO TIPO_ALOJAMIENTO (nombre) VALUES ('HOTEL');
+INSERT INTO TIPO_ALOJAMIENTO (nombre) VALUES ('GLAMPING');
+INSERT INTO TIPO_ALOJAMIENTO (nombre) VALUES ('HOSTAL');
+
+INSERT INTO ROL (nombre) VALUES ('ADMINISTRADOR');
+INSERT INTO ROL (nombre) VALUES ('ENCARGADO_ALOJAMIENTO');
 
 COMMIT;
 
--- ============================================================================
--- 4. TEMPORADA (10 filas: cubre 2025 y 2026, con nombres reales de epocas
---    altas del Quindio - Semana Santa, mitad de ano, diciembre-enero -
---    ademas de bloques de temporada media y baja por ano)
--- ============================================================================
-INSERT ALL
-  INTO TEMPORADA (nombre, categoria, anio, fecha_inicio, fecha_fin)
-     VALUES ('Semana Santa', 'ALTA', 2025, DATE '2025-04-13', DATE '2025-04-20')
-  INTO TEMPORADA (nombre, categoria, anio, fecha_inicio, fecha_fin)
-     VALUES ('Mitad de ano',  'ALTA', 2025, DATE '2025-06-15', DATE '2025-07-20')
-  INTO TEMPORADA (nombre, categoria, anio, fecha_inicio, fecha_fin)
-     VALUES ('Diciembre-Enero', 'ALTA', 2025, DATE '2025-12-01', DATE '2025-12-31')
-  INTO TEMPORADA (nombre, categoria, anio, fecha_inicio, fecha_fin)
-     VALUES ('Temporada media I', 'MEDIA', 2025, DATE '2025-02-01', DATE '2025-03-31')
-  INTO TEMPORADA (nombre, categoria, anio, fecha_inicio, fecha_fin)
-     VALUES ('Temporada baja I', 'BAJA', 2025, DATE '2025-08-15', DATE '2025-09-30')
-  INTO TEMPORADA (nombre, categoria, anio, fecha_inicio, fecha_fin)
-     VALUES ('Semana Santa', 'ALTA', 2026, DATE '2026-03-29', DATE '2026-04-05')
-  INTO TEMPORADA (nombre, categoria, anio, fecha_inicio, fecha_fin)
-     VALUES ('Mitad de ano',  'ALTA', 2026, DATE '2026-06-15', DATE '2026-07-20')
-  INTO TEMPORADA (nombre, categoria, anio, fecha_inicio, fecha_fin)
-     VALUES ('Diciembre-Enero', 'ALTA', 2026, DATE '2026-12-01', DATE '2026-12-31')
-  INTO TEMPORADA (nombre, categoria, anio, fecha_inicio, fecha_fin)
-     VALUES ('Temporada media I', 'MEDIA', 2026, DATE '2026-02-01', DATE '2026-03-28')
-  INTO TEMPORADA (nombre, categoria, anio, fecha_inicio, fecha_fin)
-     VALUES ('Temporada baja I', 'BAJA', 2026, DATE '2026-08-15', DATE '2026-09-30')
-SELECT * FROM dual;
+INSERT INTO TEMPORADA (nombre, categoria, anio, fecha_inicio, fecha_fin)
+   VALUES ('Semana Santa', 'ALTA', 2025, DATE '2025-04-13', DATE '2025-04-20');
+INSERT INTO TEMPORADA (nombre, categoria, anio, fecha_inicio, fecha_fin)
+   VALUES ('Mitad de ano',  'ALTA', 2025, DATE '2025-06-15', DATE '2025-07-20');
+INSERT INTO TEMPORADA (nombre, categoria, anio, fecha_inicio, fecha_fin)
+   VALUES ('Diciembre-Enero', 'ALTA', 2025, DATE '2025-12-01', DATE '2025-12-31');
+INSERT INTO TEMPORADA (nombre, categoria, anio, fecha_inicio, fecha_fin)
+   VALUES ('Temporada media I', 'MEDIA', 2025, DATE '2025-02-01', DATE '2025-03-31');
+INSERT INTO TEMPORADA (nombre, categoria, anio, fecha_inicio, fecha_fin)
+   VALUES ('Temporada baja I', 'BAJA', 2025, DATE '2025-08-15', DATE '2025-09-30');
+INSERT INTO TEMPORADA (nombre, categoria, anio, fecha_inicio, fecha_fin)
+   VALUES ('Semana Santa', 'ALTA', 2026, DATE '2026-03-29', DATE '2026-04-05');
+INSERT INTO TEMPORADA (nombre, categoria, anio, fecha_inicio, fecha_fin)
+   VALUES ('Mitad de ano',  'ALTA', 2026, DATE '2026-06-15', DATE '2026-07-20');
+INSERT INTO TEMPORADA (nombre, categoria, anio, fecha_inicio, fecha_fin)
+   VALUES ('Diciembre-Enero', 'ALTA', 2026, DATE '2026-12-01', DATE '2026-12-31');
+INSERT INTO TEMPORADA (nombre, categoria, anio, fecha_inicio, fecha_fin)
+   VALUES ('Temporada media I', 'MEDIA', 2026, DATE '2026-02-01', DATE '2026-03-28');
+INSERT INTO TEMPORADA (nombre, categoria, anio, fecha_inicio, fecha_fin)
+   VALUES ('Temporada baja I', 'BAJA', 2026, DATE '2026-08-15', DATE '2026-09-30');
 
 COMMIT;
 
@@ -112,6 +109,9 @@ DECLARE
     v_capacidad    NUMBER;
     v_rand         NUMBER;
     v_estrellas    NUMBER;
+    v_nombre_comercial VARCHAR2(200);
+    v_direccion    VARCHAR2(250);
+    v_telefono     VARCHAR2(30);
     contador       NUMBER := 0;
 BEGIN
     FOR m IN 1..l_municipios.COUNT LOOP
@@ -134,18 +134,24 @@ BEGIN
             v_estrellas := LEAST(5, GREATEST(1,
                               ROUND(DBMS_RANDOM.NORMAL * 0.8 + 4)));
 
+            -- se calculan antes en variables porque DBMS_RANDOM dentro del
+            -- VALUES de un INSERT puede provocar PLS-00425
+            v_nombre_comercial := INITCAP(REPLACE(v_tipo_txt,'_',' ')) || ' ' ||
+                        l_adjetivos(TRUNC(DBMS_RANDOM.VALUE(1, l_adjetivos.COUNT + 1))) ||
+                        ' ' || l_municipios(m) || ' ' || TO_CHAR(contador);
+            v_direccion := 'Km ' || TRUNC(DBMS_RANDOM.VALUE(1,20)) || ' via ' ||
+                        l_municipios(m) || ', vereda ' ||
+                        TO_CHAR(TRUNC(DBMS_RANDOM.VALUE(1,15)));
+            v_telefono := '+57 3' || TRUNC(DBMS_RANDOM.VALUE(100000000,999999999));
+
             INSERT INTO ALOJAMIENTO (municipio_id, tipo_alojamiento_id,
                         nombre_comercial, direccion, calificacion_estrellas,
                         telefono, correo)
             VALUES (l_municipio_id, l_tipo_id,
-                    INITCAP(REPLACE(v_tipo_txt,'_',' ')) || ' ' ||
-                        l_adjetivos(TRUNC(DBMS_RANDOM.VALUE(1, l_adjetivos.COUNT + 1))) ||
-                        ' ' || l_municipios(m) || ' ' || TO_CHAR(contador),
-                    'Km ' || TRUNC(DBMS_RANDOM.VALUE(1,20)) || ' via ' ||
-                        l_municipios(m) || ', vereda ' ||
-                        TO_CHAR(TRUNC(DBMS_RANDOM.VALUE(1,15))),
+                    v_nombre_comercial,
+                    v_direccion,
                     v_estrellas,
-                    '+57 3' || TRUNC(DBMS_RANDOM.VALUE(100000000,999999999)),
+                    v_telefono,
                     'contacto' || contador || '@turismouq.co')
             RETURNING alojamiento_id INTO l_aloj_id;
 
@@ -193,6 +199,7 @@ DECLARE
     TYPE t_hab IS TABLE OF HABITACION%ROWTYPE;
     l_hab t_hab;
     l_base NUMBER;
+    l_factor NUMBER;
     l_factor_alta NUMBER;
     l_ultimo_aloj NUMBER := -1;
 BEGIN
@@ -216,13 +223,18 @@ BEGIN
                   END;
 
         FOR t IN (SELECT temporada_id, categoria FROM TEMPORADA) LOOP
+            -- el factor se calcula en PL/SQL puro y se pasa como literal al INSERT,
+            -- porque DBMS_RANDOM.VALUE dentro de un CASE en una sentencia SQL
+            -- provoca PLS-00425 (tipos de argumento/retorno deben ser SQL)
+            l_factor := CASE t.categoria
+                          WHEN 'ALTA'  THEN l_factor_alta
+                          WHEN 'MEDIA' THEN DBMS_RANDOM.VALUE(0.95,1.15)
+                          ELSE              DBMS_RANDOM.VALUE(0.75,0.95)
+                        END;
+
             INSERT INTO TARIFA (habitacion_id, temporada_id, precio_noche)
             VALUES (l_hab(i).habitacion_id, t.temporada_id,
-                    ROUND(l_base * CASE t.categoria
-                                     WHEN 'ALTA'  THEN l_factor_alta
-                                     WHEN 'MEDIA' THEN DBMS_RANDOM.VALUE(0.95,1.15)
-                                     ELSE              DBMS_RANDOM.VALUE(0.75,0.95)
-                                   END, -3));
+                    ROUND(l_base * l_factor, -3));
         END LOOP;
 
         IF MOD(i,50) = 0 THEN COMMIT; END IF;
@@ -249,16 +261,23 @@ DECLARE
                                 'Cali','Barranquilla','Cartagena','Bucaramanga',
                                 'Ibague','Neiva','Cucuta','Miami','Madrid',
                                 'Ciudad de Mexico');
+    v_nombre_cliente VARCHAR2(150);
+    v_telefono_cliente VARCHAR2(30);
+    v_ciudad_cliente VARCHAR2(100);
 BEGIN
     FOR i IN 1..3000 LOOP
+        v_nombre_cliente := l_nombres(TRUNC(DBMS_RANDOM.VALUE(1,l_nombres.COUNT+1))) || ' ' ||
+                l_apellidos(TRUNC(DBMS_RANDOM.VALUE(1,l_apellidos.COUNT+1)));
+        v_telefono_cliente := '+57 3' || TRUNC(DBMS_RANDOM.VALUE(100000000,999999999));
+        v_ciudad_cliente := l_ciudades(TRUNC(DBMS_RANDOM.VALUE(1,l_ciudades.COUNT+1)));
+
         INSERT INTO CLIENTE (nombre, documento_identidad, correo, telefono, ciudad_origen)
         VALUES (
-            l_nombres(TRUNC(DBMS_RANDOM.VALUE(1,l_nombres.COUNT+1))) || ' ' ||
-                l_apellidos(TRUNC(DBMS_RANDOM.VALUE(1,l_apellidos.COUNT+1))),
+            v_nombre_cliente,
             TO_CHAR(100000000 + i),          -- documento unico (contador)
             'cliente' || i || '@correo.com',
-            '+57 3' || TRUNC(DBMS_RANDOM.VALUE(100000000,999999999)),
-            l_ciudades(TRUNC(DBMS_RANDOM.VALUE(1,l_ciudades.COUNT+1)))
+            v_telefono_cliente,
+            v_ciudad_cliente
         );
         IF MOD(i,500) = 0 THEN COMMIT; END IF;
     END LOOP;
@@ -279,18 +298,21 @@ DECLARE
                                 'Spa y masajes','Parqueadero privado','Piscina',
                                 'Cabalgata','Zona de BBQ','Wifi premium');
     l_aloj t_num;
+    v_precio_serv NUMBER;
+    v_aloj_serv   NUMBER;
+    v_nombre_serv VARCHAR2(60);
 BEGIN
     SELECT alojamiento_id BULK COLLECT INTO l_aloj
       FROM ALOJAMIENTO ORDER BY DBMS_RANDOM.VALUE;   -- orden aleatorio
 
     FOR i IN 1..30 LOOP
+        v_precio_serv := ROUND(DBMS_RANDOM.VALUE(15000,120000), -3);
+        v_aloj_serv   := l_aloj(MOD(i-1, l_aloj.COUNT) + 1);
+        v_nombre_serv := l_servicios(MOD(i-1, l_servicios.COUNT) + 1);
         INSERT INTO SERVICIO (alojamiento_id, nombre, descripcion, precio)
-        VALUES (
-            l_aloj(MOD(i-1, l_aloj.COUNT) + 1),
-            l_servicios(MOD(i-1, l_servicios.COUNT) + 1),
-            'Servicio complementario ofrecido por el alojamiento',
-            ROUND(DBMS_RANDOM.VALUE(15000,120000), -3)
-        );
+        VALUES (v_aloj_serv, v_nombre_serv,
+                'Servicio complementario ofrecido por el alojamiento',
+                v_precio_serv);
     END LOOP;
     COMMIT;
     DBMS_OUTPUT.PUT_LINE('SERVICIO generado: 30.');
@@ -306,29 +328,36 @@ DECLARE
     l_admin_rol NUMBER;
     l_enc_rol   NUMBER;
     l_user_id   NUMBER;
+    l_n_aloj    NUMBER;
+    v_clave_hash VARCHAR2(255);
 BEGIN
     SELECT rol_id INTO l_admin_rol FROM ROL WHERE nombre = 'ADMINISTRADOR';
     SELECT rol_id INTO l_enc_rol   FROM ROL WHERE nombre = 'ENCARGADO_ALOJAMIENTO';
 
     FOR i IN 1..2 LOOP
+        SELECT RAWTOHEX(STANDARD_HASH('clave_admin' || i, 'SHA256')) INTO v_clave_hash FROM dual;
         INSERT INTO USUARIO_SISTEMA (rol_id, nombre, correo, clave_hash)
         VALUES (l_admin_rol, 'Administrador ' || i,
                 'admin' || i || '@turismouq.co',
-                STANDARD_HASH('clave_admin' || i, 'SHA256'));
+                v_clave_hash);
     END LOOP;
 
     FOR t IN (SELECT tipo_alojamiento_id, nombre FROM TIPO_ALOJAMIENTO) LOOP
         FOR k IN 1..2 LOOP
+            SELECT RAWTOHEX(STANDARD_HASH('clave' || t.tipo_alojamiento_id || k, 'SHA256')) INTO v_clave_hash FROM dual;
             INSERT INTO USUARIO_SISTEMA (rol_id, nombre, correo, clave_hash)
             VALUES (l_enc_rol, 'Encargado ' || t.nombre || ' ' || k,
                     'encargado.' || LOWER(t.nombre) || k || '@turismouq.co',
-                    STANDARD_HASH('clave' || t.tipo_alojamiento_id || k, 'SHA256'))
+                    v_clave_hash)
             RETURNING usuario_id INTO l_user_id;
 
+            -- FETCH FIRST exige una expresion constante, no una funcion evaluada
+            -- en tiempo de ejecucion (ORA-62550); se calcula antes en l_n_aloj
+            l_n_aloj := TRUNC(DBMS_RANDOM.VALUE(1,3));
             FOR a IN (SELECT alojamiento_id FROM ALOJAMIENTO
                        WHERE tipo_alojamiento_id = t.tipo_alojamiento_id
                        ORDER BY DBMS_RANDOM.VALUE
-                       FETCH FIRST TRUNC(DBMS_RANDOM.VALUE(1,3)) ROWS ONLY) LOOP
+                       FETCH FIRST l_n_aloj ROWS ONLY) LOOP
                 INSERT INTO USUARIO_ALOJAMIENTO (usuario_id, alojamiento_id)
                 VALUES (l_user_id, a.alojamiento_id);
             END LOOP;
@@ -353,10 +382,12 @@ DECLARE
 
     l_hab_id  t_num;
     l_hab_aloj t_num;
+    l_clientes t_num;
     l_rooms_by_aloj t_map;   -- habitaciones agrupadas por alojamiento_id
     l_serv_by_aloj  t_map;   -- servicios agrupados por alojamiento_id
 
-    TYPE t_completada IS RECORD (reserva_id NUMBER, cliente_id NUMBER, alojamiento_id NUMBER);
+    TYPE t_completada IS RECORD (reserva_id NUMBER, cliente_id NUMBER,
+                                 alojamiento_id NUMBER, fecha_out DATE);
     TYPE t_completadas IS TABLE OF t_completada;
     l_completadas t_completadas := t_completadas();
 
@@ -370,23 +401,30 @@ DECLARE
     v_noches       NUMBER;
     v_fecha_reserva DATE;
     v_estado       VARCHAR2(15);
-    v_r, v_r2, v_r3 NUMBER;
+    v_r NUMBER;
+    v_r2 NUMBER;
+    v_r3 NUMBER;
     v_anchor_idx   NUMBER;
     v_aloj_id      NUMBER;
     v_num_hab_res  NUMBER;
     v_start        NUMBER;
     v_idx          NUMBER;
     v_room_id      NUMBER;
-    v_ci, v_co     DATE;
+    v_ci           DATE;
+    v_co           DATE;
     v_offset       NUMBER;
     v_valor_estadia NUMBER;
     v_num_pagos    NUMBER;
     v_anticipo     NUMBER;
     v_metodo       VARCHAR2(20);
+    v_comentario   VARCHAR2(1000);
+    v_fecha_resena DATE;
     v_estado_pago  VARCHAR2(15);
+    v_estado_anticipo VARCHAR2(15);
     v_num_serv     NUMBER;
     v_serv_idx     NUMBER;
     v_servicio_id  NUMBER;
+    v_cantidad_serv NUMBER;
 
     l_metodos t_num; -- indices auxiliares, no usado directamente
 
@@ -400,6 +438,9 @@ DECLARE
                       ELSE 'EFECTIVO' END;
     END;
 BEGIN
+    -- --- IDs reales de cliente (no se asume que arranquen en 1) ---
+    SELECT cliente_id BULK COLLECT INTO l_clientes FROM CLIENTE;
+
     -- --- precarga de habitaciones agrupadas por alojamiento ---
     SELECT habitacion_id, alojamiento_id BULK COLLECT INTO l_hab_id, l_hab_aloj
       FROM HABITACION;
@@ -462,7 +503,7 @@ BEGIN
                              ELSE 'CANCELADA' END;
         END IF;
 
-        v_cliente_id := TRUNC(DBMS_RANDOM.VALUE(1,3001));
+        v_cliente_id := l_clientes(TRUNC(DBMS_RANDOM.VALUE(1, l_clientes.COUNT + 1)));
 
         INSERT INTO RESERVA (cliente_id, fecha_checkin, fecha_checkout, fecha_reserva, estado)
         VALUES (v_cliente_id, v_checkin, v_checkout, v_fecha_reserva, v_estado)
@@ -519,18 +560,24 @@ BEGIN
                           END;
 
         IF v_num_pagos = 1 THEN
+            v_metodo := f_metodo_aleatorio();
             INSERT INTO PAGO (reserva_id, fecha_pago, monto, metodo, estado)
             VALUES (v_reserva_id, v_fecha_reserva, v_valor_estadia,
-                    f_metodo_aleatorio(), v_estado_pago);
+                    v_metodo, v_estado_pago);
         ELSE
             v_anticipo := ROUND(v_valor_estadia * DBMS_RANDOM.VALUE(0.3,0.5));
+            v_estado_anticipo := CASE WHEN v_estado = 'CANCELADA'
+                                      THEN v_estado_pago ELSE 'EXITOSO' END;
+
+            v_metodo := f_metodo_aleatorio();
             INSERT INTO PAGO (reserva_id, fecha_pago, monto, metodo, estado)
             VALUES (v_reserva_id, v_fecha_reserva, v_anticipo,
-                    f_metodo_aleatorio(),
-                    CASE WHEN v_estado = 'CANCELADA' THEN v_estado_pago ELSE 'EXITOSO' END);
+                    v_metodo, v_estado_anticipo);
+
+            v_metodo := f_metodo_aleatorio();
             INSERT INTO PAGO (reserva_id, fecha_pago, monto, metodo, estado)
             VALUES (v_reserva_id, v_checkin, v_valor_estadia - v_anticipo,
-                    f_metodo_aleatorio(), v_estado_pago);
+                    v_metodo, v_estado_pago);
         END IF;
 
         -- ---------- servicios contratados ----------
@@ -544,9 +591,10 @@ BEGIN
             FOR s IN 1..v_num_serv LOOP
                 v_serv_idx := TRUNC(DBMS_RANDOM.VALUE(1, l_serv_by_aloj(v_aloj_id).COUNT + 1));
                 v_servicio_id := l_serv_by_aloj(v_aloj_id)(v_serv_idx);
+                v_cantidad_serv := ROUND(DBMS_RANDOM.VALUE(1,4));
                 BEGIN
                     INSERT INTO RESERVA_SERVICIO (reserva_id, servicio_id, cantidad)
-                    VALUES (v_reserva_id, v_servicio_id, ROUND(DBMS_RANDOM.VALUE(1,4)));
+                    VALUES (v_reserva_id, v_servicio_id, v_cantidad_serv);
                 EXCEPTION
                     WHEN DUP_VAL_ON_INDEX THEN NULL; -- ese servicio ya estaba en esta reserva
                 END;
@@ -556,7 +604,7 @@ BEGIN
         -- ---------- candidatas a resena (reservas completadas) ----------
         IF v_estado = 'COMPLETADA' THEN
             l_completadas.EXTEND;
-            l_completadas(l_completadas.COUNT) := t_completada(v_reserva_id, v_cliente_id, v_aloj_id);
+            l_completadas(l_completadas.COUNT) := t_completada(v_reserva_id, v_cliente_id, v_aloj_id, v_checkout);
         END IF;
 
         IF MOD(n,1000) = 0 THEN
@@ -572,6 +620,10 @@ BEGIN
     FOR i IN 1..l_completadas.COUNT LOOP
         IF DBMS_RANDOM.VALUE < 0.45 THEN
             v_r := DBMS_RANDOM.VALUE;
+            v_fecha_resena := l_completadas(i).fecha_out + 1;
+            v_comentario := CASE WHEN DBMS_RANDOM.VALUE < 0.6
+                     THEN 'Buena experiencia, volveria a hospedarme.'
+                     ELSE NULL END;
             INSERT INTO RESENA (cliente_id, alojamiento_id, reserva_id, calificacion, comentario, fecha)
             VALUES (
                 l_completadas(i).cliente_id,
@@ -580,10 +632,8 @@ BEGIN
                 CASE WHEN v_r < 0.35 THEN 5 WHEN v_r < 0.65 THEN 4
                      WHEN v_r < 0.85 THEN 3 WHEN v_r < 0.95 THEN 2
                      ELSE 1 END,
-                CASE WHEN DBMS_RANDOM.VALUE < 0.6
-                     THEN 'Buena experiencia, volveria a hospedarme.'
-                     ELSE NULL END,
-                v_checkin -- fecha aproximada de la resena (posterior a la estadia)
+                v_comentario,
+                v_fecha_resena -- resena un dia despues del checkout
             );
         END IF;
         IF MOD(i,2000) = 0 THEN COMMIT; END IF;
